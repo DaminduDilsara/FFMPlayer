@@ -89,22 +89,28 @@ func UploadFileApi(c echo.Context) (string, error) {
 		return "", err
 	}
 
+	cmd := exec.Command("./segmenting", filename, fileId)
+	fmt.Println(")))))))))))))))))))))))))))))", cmd.String())
+	b, err = cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("Running getThumbnailCmd failed: %v", err)
+	}
+	fmt.Printf("%s\n", b)
+
 	//	segment := `ffmpeg -re -i ./uploads/processed/` + filename + ` -map 0 -map 0 -map 0 -c:a aac -c:v libx264 -b:v:1 20000k -b:v:2 20000k -b:v:2 20000k -s:v:0 1920x1080 -s:v:1 1280x720 -s:v:2 720x480 -profile:v:1 baseline -profile:v:2 baseline -profile:v:0 main
 	//-bf 1 -keyint_min 120 -g 120 -sc_threshold 0 -b_strategy 0 -ar:a:1 22050 -use_timeline 1 -use_template 1 -adaptation_sets "id=0,streams=v id=1,streams=a" -f dash ./segments/` + fileId + `/` + fileId + `_out.mpd`
 	//	segmentArgs := strings.Split(segment, " ")
-
-	segmentCmd := exec.Command("ffmpeg", "-re", "-i", "./uploads/processed/"+filename, "-map", "0", "-map", "0", "-map", "0", "-c:a", "aac",
-		"-c:v", "libx264", "-b:v:0", "20000k", "-b:v:1", "20000k", "-b:v:2", "20000k", "-s:v:0", "1920x1080", "-s:v:1", "1280x720", "-s:v:2", "720x480",
-		"-profile:v:1", "baseline", "-profile:v:2", "baseline", "-profile:v:0", "main", "-bf", "1", "-keyint_min", "120", "-g", "120", "-sc_threshold", "0", "-b_strategy",
-		"0", "-ar:a:1", "22050", "-use_timeline", "1", "-use_template", "1", "-adaptation_sets", `"id=0,streams=v id=1,streams=a"`, "-f", "dash", "./segments/redda_out.mpd")
-
-	fmt.Println("---------", segmentCmd.String())
-
-	b, err = segmentCmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Running segmentCmd failed: %v", err)
-	}
-	fmt.Printf("================================================================== %s\n ==========================================", b)
+	//segmentCmd := exec.Command("ffmpeg", "-re", "-i", "./uploads/processed/test.mp4", "-map", "0", "-map", "0", "-c:a", "aac",
+	//	"-c:v", "libx264", "-b:v:0", "20000k", "-b:v:1", "20000k", "-s:v:1", "1280x720",
+	//	"-profile:v:1", "baseline", "-profile:v:0", "main", "-bf", "1", "-keyint_min", "120", "-g", "120", "-sc_threshold", "0", "-b_strategy",
+	//	"0", "-ar:a:1", "22050", "-use_timeline", "1", "-use_template", "1", "-window_size", "5", "-adaptation_sets", `"id=0,streams=v id=1,streams=a"`, "-f", "dash", "redda_out.mp4")
+	//fmt.Println("---------", segmentCmd.String())
+	//
+	//b, err = segmentCmd.CombinedOutput()
+	//if err != nil {
+	//	log.Printf("Running segmentCmd failed: %v", err)
+	//}
+	//fmt.Printf("================================================================== %s\n ==========================================", b)
 
 	return "", c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields title=%s and description=%s.</p>", file.Filename, title, description))
 }
