@@ -24,7 +24,7 @@ func UploadFileApi(c echo.Context) (string, error) {
 	//-----------
 
 	// Source
-	file, err := c.FormFile("file")
+	file, err := c.FormFile("video")
 	if err != nil {
 		return "", err
 	}
